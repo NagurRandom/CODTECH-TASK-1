@@ -1,0 +1,99 @@
+CODTECH TASK-1
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set random seed for reproducibility
+np.random.seed(42)
+
+# Generate synthetic data
+n_samples = 891  # Same as the Titanic dataset
+
+# Features
+passenger_id = np.arange(1, n_samples + 1)
+survived = np.random.randint(0, 2, size=n_samples)
+pclass = np.random.randint(1, 4, size=n_samples)
+sex = np.random.choice(['male', 'female'], size=n_samples)
+age = np.random.uniform(1, 80, size=n_samples)
+sibsp = np.random.randint(0, 6, size=n_samples)
+parch = np.random.randint(0, 6, size=n_samples)
+fare = np.random.uniform(5, 500, size=n_samples)
+embarked = np.random.choice(['C', 'Q', 'S'], size=n_samples)
+
+# Create a DataFrame
+synthetic_titanic_data = pd.DataFrame({
+    'PassengerId': passenger_id,
+    'Survived': survived,
+    'Pclass': pclass,
+    'Sex': sex,
+    'Age': age,
+    'SibSp': sibsp,
+    'Parch': parch,
+    'Fare': fare,
+    'Embarked': embarked
+})
+
+# Basic information about the dataset
+print("Dataset Info:")
+print(synthetic_titanic_data.info())
+
+# Summary statistics
+print("\nSummary Statistics:")
+print(synthetic_titanic_data.describe(include='all'))
+
+# Check for missing values
+missing_values = synthetic_titanic_data.isnull().sum()
+print("\nMissing Values:")
+print(missing_values)
+
+# Data visualization
+fig, axes = plt.subplots(3, 1, figsize=(12, 18))
+
+# Histogram for Age distribution
+sns.histplot(synthetic_titanic_data['Age'], kde=True, bins=30, ax=axes[0])
+axes[0].set_title('Age Distribution')
+axes[0].set_xlabel('Age')
+axes[0].set_ylabel('Frequency')
+
+# Bar plot for Survived counts
+sns.countplot(x='Survived', data=synthetic_titanic_data, ax=axes[1])
+axes[1].set_title('Survival Counts')
+axes[1].set_xlabel('Survived')
+axes[1].set_ylabel('Count')
+
+# Scatter plot for Age vs. Fare
+sns.scatterplot(x='Age', y='Fare', hue='Survived', data=synthetic_titanic_data, ax=axes[2])
+axes[2].set_title('Age vs. Fare')
+axes[2].set_xlabel('Age')
+axes[2].set_ylabel('Fare')
+
+plt.tight_layout()
+plt.show()
+
+# Correlation analysis using only numeric columns
+numeric_cols = synthetic_titanic_data.select_dtypes(include=[np.number]).columns
+correlation_matrix = synthetic_titanic_data[numeric_cols].corr()
+
+plt.figure(figsize=(12, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', linewidths=0.5)
+plt.title('Correlation Matrix')
+plt.show()
+
+# Outlier detection
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='Age', data=synthetic_titanic_data)
+plt.title('Boxplot of Age')
+plt.xlabel('Age')
+plt.show()
+
+plt.figure(figsize=(10, 6))
+sns.boxplot(x='Fare', data=synthetic_titanic_data)
+plt.title('Boxplot of Fare')
+plt.xlabel('Fare')
+plt.show()
+
+# Save the synthetic dataset to a CSV file
+synthetic_titanic_data.to_csv('synthetic_titanic_data.csv', index=False)
+print("\nSynthetic dataset saved to 'synthetic_titanic_data.csv'")
